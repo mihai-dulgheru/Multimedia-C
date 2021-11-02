@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Histograma</title>
+    <script type="text/javascript" src="http://codel.jquery.com/jquery-latest.js"></script>
+    
+    <script type="text/javascript">
+        $.event.props.push("dataTransfer");
+        
+        $(function () {
+            function desenare(img) {
+                var cW = img.width, cH = img.height;
+                $("#canvasImagine")
+                    .attr({ width: cW, height: cH });
+                
+                var context = $("#canvasImagine")[0].getContext("2d");
+                context.drawImage(img, 0, 0);
+
+                var id = context.getImageData(0, 0, cW, cH);
+
+                var v = [];
+                for (var i = 0; i < 256; i++) {
+                    v.push(0);
+                }
+
+                for (var y = 0; y < cH; y++) {
+                    for (var x = 0; x < cW; x++) {
+                        var i = (y * cW * 4) + x * 4;
+                        var val = Math.round(
+                            (id.data[i] + id.data[i + 1] + id.data[i + 2])/3);
+                        v[val]++;
+                    }
+                }
+
+                grafic(context, v, cW, cH);
+
+                var id
+            }
+
+            function grafic(c, v, W, H) {
+                c.save();
+                var n = v.length;
+                var f = H / Math.max.apply(this, v);
+                var w = W / n;
+
+                c.rotate(Math.PI);
+                c.translate(-W, -H);
+                c.scale(-1, H / Math.max.apply(this, v));
+
+                c.fillStyle = "rgba(255,0,0,0.3)";
+                for (var i = 0; i < n; i++) {
+                    c.fillRect(-i * w, 0, w, v[i]);
+                }
+                c.restore();
+            }
+
+
+            $(document)
+                .on('dragover', function (e) {
+                    e.preventDefault();
+                })
+                .on('drop', function (e) {
+                    e.preventDefault();
+                    var files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            desenare($("<img></img>")
+                                .attr("src", e.target.result)[0]);
+                        };
+                        reader.readAsDataURL(files[0]);
+                    }
+                });
+
+            $("#canvasImagine").click(function () {
+                $("a").attr("href", this.toDataURL("image/png"));
+            });
+        });
+    </script>
+</head>
+<body style="text-align:center; background-color:black">
+    <a href="#" download="imagine.png">
+        <canvas id="canvasImagine"></canvas>
+    </a>
+</body>
+</html>

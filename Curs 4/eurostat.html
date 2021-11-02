@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Exemplu EUROSTAT</title>
+    <style type="text/css">
+        body {
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 10pt;
+        }
+
+        table {
+            padding: 0px;
+            border-spacing: 0px 4px;
+            margin: auto;
+        }
+
+        tr {
+            margin: 0px;
+        }
+
+        td {
+            text-align: right;
+            margin: 0px;
+            padding: 2px 8px;
+        }
+
+        #popup {
+            display: none;
+            position: absolute;
+            border: 3px solid blue;
+            background-color: lightblue;
+            color: darkred;
+            padding: 16px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+    </style>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+
+        // Parametri:
+        var setDate = "nama_10r_3gdp";
+        var unitateMasura = "EUR_HAB_EU";
+        var tari = ["AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "EL", "ES", "FI",
+            "FR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT",
+            "RO", "SE", "SI", "SK", "UK"];
+        var ani = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+            2010, 2011, 2012, 2013, 2014, 2015];
+
+        // Construire URL serviciu pe baza parametrilor
+        function construireLink() {
+            // vezi http://ec.europa.eu/eurostat/web/json-and-unicode-web-services/getting-started/rest-request
+            // pentru format / alte detalii
+            var url = `http://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en`;
+            url += `/${setDate}?unit=${unitateMasura}&`;
+            url += tari.map(c => `geo=${c}`).join("&");
+            url += "&" + ani.map(y => `year=${y}`).join("&");
+
+            return url;
+        }
+
+        // procent (intre 0 si 100) => culoare (intre rosu si verde)
+        function calculCuloare(procent) {
+
+            // Varianta 1 - Modelul RGB
+            var r, g, b = 0;
+            if (procent < 50) {
+                // in prima jumatate maximixam componenta rosu
+                r = 255;
+
+                // si completam crescator cu verde
+                // intre 0 - minim (->rosu) si 255 - maxim(->galben)
+                g = Math.round(5.1 * procent);
+            }
+            else {
+                // maximizam componenta pentru verde
+                g = 255;
+
+                // si completam descrescator cu rosu
+                // intre 255 - maxim(->galben) si 0 - minim (->verde)
+                r = Math.round(510 - 5.10 * procent);
+            }
+            return `rgb(${r}, ${g}, ${b})`;
+
+            // Varianta 2 - Modelul HSL
+
+            // transformam valoarea procentuala in unghi
+            // intre 0 grade (rosu) si 120 grade (verde)
+            // saturatie - maxim (100%), luminozitate - 50%
+            return `hsl(${Math.round(procent * 1.2)}, 100%, 50%)`;
+        }
+
+        function afisareDate(data) {
+
+            // 0. Copiem datele din OBIECTUl data.value in VECTORUL v
+            var v = [];
+            for (var index in data.value) {
+                v.push(data.value[index]);
+            }
+
+            var denumireTara = function (codTara) {
+                return data.dimension.geo.category.label[codTara];
+            };
+
+            var dateTara = function (indexTara) {
+                var idxStart = indexTara * ani.length;
+                return v.slice(idxStart, idxStart + ani.length);
+            };
+
+            // 1. Construire tabel
+            var tabel = $("<table></table>").appendTo($("body"));
+
+            // 2. Adaugare rand titlu
+            var randTitlu = $("<tr><td></td></tr>").appendTo(tabel);
+            for (var indexAn = 0; indexAn < ani.length; indexAn++) {
+                $(`<td>${ani[indexAn]}</td>`).appendTo(randTitlu);
+            }
+            $("<td>Grafic - valoarea ultimului an</td>").appendTo(randTitlu);
+
+            // 3.  Pentru fiecare tara
+            for (let indexTara = 0; indexTara < tari.length; indexTara++) {
+
+                // Obtinem denumirea, valorile, min / max
+                var denumire = denumireTara(tari[indexTara]);
+                var vTara = dateTara(indexTara);
+
+                var min = Math.min.apply(null, vTara);
+                var max = Math.max.apply(null, vTara);
+                var delta = max - min;
+
+                // Adaugam randul (cu celula pentru denumire)
+                var rand = $(`<tr><td>${denumire}</td></tr>`).appendTo(tabel);
+
+                // in cadrul tarii, pentru fiecare an
+                for (var indexAn = 0; indexAn < ani.length; indexAn++) {
+
+                    // obtinem valoarea
+                    var valoare = vTara[indexAn];
+                    var procent = (valoare - min) * 100 / delta;
+
+                    // adaugam celula cu valoarea atasata
+                    var celula = $("<td></td>")
+                        .attr("data-valoare", valoare)
+                        .css("backgroundColor", calculCuloare(procent))
+                        .appendTo(rand);
+
+                    // atasam evenimentele pentru afisarea popup-ului
+                    celula.mouseenter(function (e) {
+                        $("#popup")
+                            .text($(this).attr("data-valoare") + "% din media UE")
+                            .css("display", "block");
+
+                    });
+                    celula.mousemove(function (e) {
+                        $("#popup")
+                            .css("left", (e.pageX + 10) + "px")
+                            .css("top", (e.pageY + 10) + "px");
+                    });
+                    celula.mouseleave(function (e) {
+                        $("#popup")
+                            .css("display", "none");
+                    });
+                }
+
+                // adaugam celula pentru grafic (dimensiunea corespuzatoare ultimei valori inregistrate)
+                var ultimaValoare = vTara[ani.length - 1];
+                $(`<td><div style="background-color:red; width:${ultimaValoare}px;">${ultimaValoare}</div><td>`)
+                    .appendTo(rand);
+            }
+        }
+
+        $(function () {
+            $.get(construireLink(), afisareDate);
+        });
+    </script>
+</head>
+<body>
+    <div id="popup">TEST</div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script type="text/javascript">
+
+        let url = "http://ase.softmentor.ro/agenda";
+
+        async function app() {
+            //let response = await fetch(url);
+
+            let response = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    nume: "Test",
+                    prenume: "Curs",
+                    telefon: "0712345678"
+                })
+            });
+
+            //console.log(response.ok, response.status, response.statusText);
+            //response.headers.forEach((value, key) => console.log(`${key}: ${value}`));
+
+            //let text = await response.text();
+            //let date = JSON.parse(text);
+
+            let date = await response.json();
+
+            console.log(date);
+        }
+        app();
+
+    </script>
+</body>
+</html>

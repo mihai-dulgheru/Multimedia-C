@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <p></p>
+
+    <script type="text/javascript">
+
+        const slides = [
+            "Slide 1",
+            "Slide <strong>2</strong>",
+            "Slide <em>3</em>"
+        ];
+        let position = 0;
+
+        function display() {
+            let p = document.querySelector("p");
+            p.innerHTML = slides[position];
+        }
+
+        //for (position = 0; position < slides.length; position++) {
+        //    // ...
+        //    display();
+        //}   // -> Slide 3
+
+        display();
+
+        //setInterval(() => {
+        //    position = position >= slides.length - 1 ? 0 : position + 1;
+        //    display();
+        //}, 1000);
+
+        function advancement() {    // echivalenta cu setInterval
+            setTimeout(advancement, 1000);
+            position = position >= slides.length - 1 ? 0 : position + 1;
+            display();
+        }
+
+        function advancement() {
+            position = position >= slides.length - 1 ? 0 : position + 1;
+            display();
+            setTimeout(advancement, 1000);
+        }
+
+        setTimeout(advancement, 1000);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script type="text/javascript">
+
+        function afisare(mesaj, f) {
+            // A
+            setTimeout(() => {
+                console.log(mesaj);
+                f();
+            }, 1000);
+            // B
+        }
+
+        //afisare("Ana are mere", () => console.log("gata"));
+
+        //afisare("Ana", () => {
+        //    afisare("are", () => {
+        //        afisare("mere", () => { });
+        //    });
+        //});
+
+        function afisare2(mesaj) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log(mesaj);
+
+                    resolve(`Am afisat '${mesaj}'.`);
+                }, 1000);
+            });
+        }
+
+        //afisare2("Ana")
+        //    .then(() => afisare2("are"))
+        //    .then((rezultat) => {
+        //        console.log('Rezultatul operatiei:', rezultat);
+        //        afisare2("mere");
+        //    })
+        //    .then(() => console.log("gata"));
+
+        async function test() {
+            await afisare2("Ana");
+            let rezultat = await afisare2("are");
+            console.log('Rezultatul operatiei:', rezultat);
+            await afisare2("mere");
+        }
+
+        test();
+
+    </script>
+</body>
+</html>
