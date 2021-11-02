@@ -4,17 +4,16 @@
     <title>Procesare imagine</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
     <style type="text/css">
-        body
-        {
-        	background-color: Gray;
+        body {
+            background-color: Gray;
         }
-        canvas  /* Poziționare canvas în centrul ferestrei */
-        {            
-        	position:absolute; 
-        	left: 50%;
-        	margin-left: -430px; /* jumătate din lățimea canvas-ului */
-        	top: 50%;
-        	margin-top:-300px;  /* jumătate din înălțimea canvas-ului */
+
+        canvas /* Poziționare canvas în centrul ferestrei */ {
+            position: absolute;
+            left: 50%;
+            margin-left: -430px; /* jumătate din lățimea canvas-ului */
+            top: 50%;
+            margin-top: -300px; /* jumătate din înălțimea canvas-ului */
         }
     </style>
 </head>
@@ -35,13 +34,13 @@
 
             // 2. Funcția de procesare apelată la fiecare 30ms
             function desenare() {
-            
+
                 // se desenează imaginea încărcată pe canvas
                 c.drawImage(img[0], 0, 0);
 
                 // se extrag valorile tututor pixelilor
-                // !! OPERAȚIA VA EȘUA DACĂ IMAGINEA DESENATĂ ANTERIOR NU A FOST 
-                // !! INCĂRCATĂ PRINTR-UN SERVER WEB SAU FACE PARTE 
+                // !! OPERAȚIA VA EȘUA DACĂ IMAGINEA DESENATĂ ANTERIOR NU A FOST
+                // !! INCĂRCATĂ PRINTR-UN SERVER WEB SAU FACE PARTE
                 // !! DINTR-UN DOMENIU DIFERIT DE CEL AL DOCUMENTULUI HTML
                 var imageData = c.getImageData(0, 0, cW, cH);
                 var pixels = imageData.data;
@@ -50,7 +49,7 @@
                     for (var x = 0; x < cW; x++) {
 
                         // - se calculează indicele de început pentru pixel
-                        // în funcție de coordonate 
+                        // în funcție de coordonate
                         // - fiecărui pixel îi corespund patru valori:
                         //      pixels[i] - Red
                         //      pixels[i+1] - Green
@@ -101,7 +100,7 @@
                 mx += Math.round(Math.random() * 2 - 1);
                 my += Math.round(Math.random() * 2 - 1);
             }, 30);
-        });    
+        });
     </script>
 </body>
 </html>

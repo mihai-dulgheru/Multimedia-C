@@ -4,16 +4,16 @@
     <meta charset="utf-8" />
     <title>Histograma</title>
     <script type="text/javascript" src="http://codel.jquery.com/jquery-latest.js"></script>
-    
+
     <script type="text/javascript">
         $.event.props.push("dataTransfer");
-        
+
         $(function () {
             function desenare(img) {
                 var cW = img.width, cH = img.height;
                 $("#canvasImagine")
                     .attr({ width: cW, height: cH });
-                
+
                 var context = $("#canvasImagine")[0].getContext("2d");
                 context.drawImage(img, 0, 0);
 
@@ -28,14 +28,14 @@
                     for (var x = 0; x < cW; x++) {
                         var i = (y * cW * 4) + x * 4;
                         var val = Math.round(
-                            (id.data[i] + id.data[i + 1] + id.data[i + 2])/3);
+                            (id.data[i] + id.data[i + 1] + id.data[i + 2]) / 3);
                         v[val]++;
                     }
                 }
 
                 grafic(context, v, cW, cH);
 
-                var id
+                var id;
             }
 
             function grafic(c, v, W, H) {
