@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript">
+
+        function aplicatie() {
+            // 1. Model
+            let canvas = document.querySelector('canvas');
+            let W = canvas.width, H = canvas.height;
+            let context = canvas.getContext('2d');
+            let mx = 0, my = 0;
+
+            let obiecte = [
+                //{
+                //    x: 100, y: 100, w: 30, h: 30, dx: 2, dy: 0
+                //},
+                //{
+                //    x: 100, y: 20, w: 30, h: 30, dx: -3, dy: 0
+                //},
+                //{
+                //    x: 100, y: 20, w: 30, h: 30, cx: 100, cy: 100, r: 30, u: 0
+                //}
+            ];
+
+            let instrumentCircular = {
+                click: () => {
+                    obiecte.push({
+                        x: 0,
+                        y: 0,
+                        w: 10,
+                        h: 10,
+                        cx: mx,
+                        cy: my,
+                        r: 40,
+                        u: 0
+                    });
+                }
+            };
+
+            let instrumentLiniar = {
+                click: () => {
+                    obiecte.push({
+                        x: mx,
+                        y: my,
+                        w: 10,
+                        h: 10,
+                        dx: 2,
+                        dy: 0
+                    });
+                }
+            };
+
+            let instrumentStop = {
+                click: () => {
+                    for (let o of obiecte) {
+                        if (o.dx) {
+                            o.dx = 0;
+                        }
+                    }
+                }
+            };
+
+            let instrument = instrumentLiniar;
+
+            // 2. Desenare
+            function desenare() {
+
+                // a) Stergere canvas
+                context.fillStyle = 'rgba(200, 200, 200, 0.1)';
+                context.fillRect(0, 0, W, H);
+
+                // b) desenare model
+                context.fillStyle = 'red';
+
+                for (let o of obiecte) {
+                    context.fillRect(o.x, o.y, o.w, o.h);
+                }
+
+                requestAnimationFrame(desenare);
+            }
+            desenare();
+
+            // 3. Actualizare
+            function actualizare() {
+                for (let o of obiecte) {
+
+                    if (o.r) {
+                        // circular
+                        o.u = o.u + 3 * Math.PI / 180;
+
+                        o.x = o.cx + o.r * Math.cos(o.u);
+                        o.y = o.cy + o.r * Math.sin(o.u);
+                    }
+                    else {
+                        // liniar
+                        if (o.x < 0) {
+                            o.dx = Math.abs(o.dx);
+                            o.x = 0;
+                        } else if (o.x + o.w > W) {
+                            o.dx = -Math.abs(o.dx);
+                            o.x = W - o.w;
+                        }
+                        o.x = o.x + o.dx;
+                        o.y = o.y + o.dy;
+                    }
+                }
+            }
+            setInterval(actualizare, 10);
+
+            // 4. Interactiune
+            canvas.addEventListener('mousemove', e => {
+                mx = e.x - canvas.getBoundingClientRect().x;
+                my = e.y - canvas.getBoundingClientRect().y;
+            });
+
+            canvas.addEventListener('click', e => {
+                if (instrument) {
+                    instrument.click(e);
+                }
+            });
+
+            document.querySelector('#liniar').addEventListener('click', e => {
+                instrument = instrumentLiniar;
+            });
+            document.querySelector('#circular').addEventListener('click', e => {
+                instrument = instrumentCircular;
+            });
+            document.querySelector('#stop').addEventListener('click', e => {
+                instrument = instrumentStop;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', aplicatie);
+    </script>
+</head>
+<body>
+    <canvas width="600" height="400"></canvas>
+    <input type="button" value="Liniar" id="liniar" />
+    <input type="button" value="Circular" id="circular" />
+    <input type="button" value="Stop" id="stop" />
+</body>
+</html>
