@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Salvare SVG</title>
+    <script type="text/javascript">
+
+        function salvareSVG() {
+
+            // 1. Extragere text SVG și adăugare namespace-uri
+            let svgText = document.querySelector('svg').outerHTML;
+            svgText = svgText.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"');
+
+            // 2. Construire BLOB și URL
+            var svgBlob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
+            var svgUrl = URL.createObjectURL(svgBlob);
+
+            // 3. Construire dinamică și activare link (pe baza URL-ului)
+            var downloadLink = document.createElement("a");
+            downloadLink.href = svgUrl;
+            downloadLink.download = "desen.svg";
+            downloadLink.click();
+        }
+
+        function aplicatie() {
+            document.querySelector('input').addEventListener('click', salvareSVG);
+        }
+        document.addEventListener('DOMContentLoaded', aplicatie);
+    </script>
+</head>
+<body>
+    <svg width="800" height="200">
+
+        <defs>
+            <g id="face">
+                <circle cx="50" cy="50" r="50" stroke="black" fill="yellow" stroke-width="5"></circle>
+                <ellipse cx="25" cy="35" rx="15" ry="8" fill="blue" stroke="black" stroke-width="3"></ellipse>
+                <ellipse cx="75" cy="35" rx="15" ry="8" fill="blue" stroke="black" stroke-width="3"></ellipse>
+
+                <polyline points="35,70 40,75 60,75 65,70" fill="yellow" stroke="black" stroke-width="3"></polyline>
+            </g>
+        </defs>
+
+        <use xlink:href="#face" x="30" y="50"
+             transform="scale(2, 0.5)" opacity="0.3"></use>
+        <use xlink:href="#face" x="100" y="50"></use>
+        <use xlink:href="#face" x="200" y="50"></use>
+    </svg>
+    <br />
+    <input type="button" value="Salvare SVG" />
+</body>
+</html>

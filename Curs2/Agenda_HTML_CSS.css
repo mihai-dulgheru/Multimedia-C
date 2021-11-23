@@ -1,3 +1,4 @@
+
 body {
     font-family: tahoma;
     font-size: 11pt;
@@ -31,6 +32,7 @@ th {
     background-color: #EEEEEE;
 }
 
+
 caption {
     padding: 8px 12px;
     border: 1px solid Gray;
@@ -43,6 +45,7 @@ tfoot {
     background-color: #EEEEEE;
     font-weight: bold;
 }
+
 
 form {
     border: 1px solid Gray;

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        svg {
+            border: 1px solid black;
+        }
+
+        #grafic polyline {
+            stroke: red;
+            stroke-width: 3;
+            fill: none;
+        }
+    </style>
+    <script type="text/javascript">
+        let v = [10, 40, 80, 60, 90];
+
+        function salvare() {
+            let svgText = document.querySelector('#grafic').outerHTML;
+            svgText = svgText.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+
+            let url = URL.createObjectURL(new Blob([svgText], { type: 'image/svg+xml' }));
+
+            let a = document.createElement('a');
+            a.download = 'text.svg';
+            a.href = url;
+            a.click();
+        }
+
+        function aplicatie() {
+            let svg = document.querySelector('#grafic');
+
+            let W = parseInt(svg.getAttribute('width'), 10);
+            let H = parseInt(svg.getAttribute('height'), 10);
+
+            let n = v.length;
+            let w = W / (n - 1);
+            let f = H / Math.max.apply(null, v);    // y = H - f * v[i]
+
+            let line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            line.setAttribute('points', v.map((val, i) => `${i * w},${Math.round(H - f * val)}`).join(' '));
+            svg.append(line);
+
+            document.querySelector('#btnSalvare').addEventListener('click', salvare);
+        }
+        document.addEventListener('DOMContentLoaded', aplicatie);
+
+    </script>
+</head>
+<body>
+    <input type="button" id="btnSalvare" value="Salvare" /><br />
+    <svg id="grafic" width="400" height="300"></svg>
+</body>
+</html>

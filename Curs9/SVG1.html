@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        .test {
+            fill: red;
+            fill-opacity: 0.5;
+            stroke: green;
+            stroke-width: 6;
+            stroke-opacity: 0.8;
+        }
+    </style>
+    <script type="text/javascript">
+        let elemente = [];
+
+        function deplasare() {
+            for (let rect of elemente) {
+                let x = parseInt(rect.getAttribute('x'), 10);
+                rect.setAttribute('x', x + 1);
+            }
+        }
+
+        function aplicatie() {
+            let svg = document.querySelector('svg');
+
+            for (let i = 0; i < 3; i++) {
+                let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', '0');
+                rect.setAttribute('y', (200 + i * 40).toString());
+                rect.setAttribute('width', '30');
+                rect.setAttribute('height', '30');
+
+                rect.style.stroke = 'red';
+                rect.style.strokeWidth = 3;
+                rect.style.fill = 'silver';
+
+                rect.addEventListener('click', e => {
+                    //let x = parseInt(e.target.getAttribute('x'));
+                    let x = 0;
+                    e.target.setAttribute('x', x + 10);
+                });
+
+                svg.appendChild(rect);
+                elemente.push(rect);
+            }
+
+            setInterval(deplasare, 50);
+        }
+        document.addEventListener('DOMContentLoaded', aplicatie);
+    </script>
+</head>
+<body>
+    <svg width="400" height="300">
+        <line x1="0" y1="300" x2="400" y2="0" stroke="black" stroke-width="2"></line>
+
+        <rect x="10" y="250" width="50" height="30" class="test"></rect>
+        <rect x="70" y="250" width="50" height="30" class="test"></rect>
+
+        <defs>
+            <g id="face">
+                <circle cx="50" cy="50" r="50" stroke="black" fill="yellow"></circle>
+
+                <ellipse cx="25" cy="35" rx="15" ry="8" fill="blue"></ellipse>
+                <ellipse cx="75" cy="35" rx="15" ry="8" fill="blue"></ellipse>
+
+                <!--<polyline points="35,70 40,75 60,75 65,70" stroke="black" fill="red"></polyline>-->
+                <polygon points="35,70 40,75 60,75 65,70" stroke="black" fill="red"></polygon>
+            </g>
+        </defs>
+
+        <text x="10" y="150" font-size="16" font-family="Tahoma">
+            Ana <tspan fill="red" font-size="14">are</tspan> mere.
+        </text>
+
+        <filter id="unFiltru">
+            <!--<feConvolveMatrix kernelMatrix="3 3 3  0 0 0  -3 -3 -3" />-->
+            <feGaussianBlur stdDeviation="3"></feGaussianBlur>
+        </filter>
+
+        <use xlink:href="#face" x="150" y="10"></use>
+        <use xlink:href="#face" x="50" y="10"></use>
+        <use xlink:href="#face" x="100" y="5" filter="url(#unFiltru)" transform="scale(1, 2)"></use>
+    </svg>
+</body>
+</html>
